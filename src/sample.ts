@@ -5,7 +5,7 @@ function getUser(id: number): User & { score: number } {
     id: id,
     name: "Juan dela Cruz",
     email: "juan@example.com",
-    role: "student",
+    role: "tutor",
     isActive: true,
     score: 95.5,
   };
