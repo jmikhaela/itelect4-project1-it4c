@@ -8,8 +8,8 @@ import type {
   BookingPreview,
   PublicUser,
   RoleCount,
-} from "../types/index";
-import { BookingStatus } from "../types/index";
+} from "./types/index";
+import { BookingStatus } from "./types/index";
 
 const projectName: string = "peer-tutoring-platform";
 const currentYear: number = 2026;
