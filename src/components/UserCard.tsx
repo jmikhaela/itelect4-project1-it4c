@@ -5,44 +5,64 @@ interface UserCardProps {
   onSelect: (id: number) => void;
 }
 
-function UserCard({
-  user,
-  onSelect,
-}: UserCardProps) {
+function UserCard({ user, onSelect }: UserCardProps) {
   return (
-    <div className="rounded-xl bg-white p-6 shadow-md">
-      <h3 className="text-xl font-bold text-gray-800">
-        {user.name}
-      </h3>
+    <div className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+      {/* Card Header */}
+      <div className="h-24 bg-gradient-to-r from-blue-600 to-indigo-600" />
 
-      <p className="mt-2 text-gray-600">
-        {user.email}
-      </p>
+      <div className="px-6 pb-6">
+        {/* Avatar */}
+        <div className="-mt-12 flex items-end justify-between">
+          <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-blue-100 text-3xl font-bold text-blue-700 shadow-md">
+            {user.name
+              .split(" ")
+              .map((name) => name[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
+          </div>
 
-      <p className="mt-1 text-gray-600">
-        Role: {user.role}
-      </p>
+          {/* Status */}
+          <span
+            className={`mb-2 rounded-full px-3 py-1 text-xs font-semibold ${
+              user.isActive
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            <span className="mr-1">●</span>
+            {user.isActive ? "Active" : "Inactive"}
+          </span>
+        </div>
 
-      <p className="text-gray-600">
-        Status:{" "}
-        <span
-          className={
-            user.isActive
-              ? "font-semibold text-green-600"
-              : "font-semibold text-red-600"
-          }
+        {/* User Information */}
+        <div className="mt-5">
+          <h3 className="text-xl font-bold text-slate-900">
+            {user.name}
+          </h3>
+
+          <p className="mt-1 text-sm text-slate-500">
+            {user.email}
+          </p>
+
+          <div className="mt-4 inline-flex rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-semibold capitalize text-blue-700">
+            🎓 {user.role}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="my-5 border-t border-slate-100" />
+
+        {/* Button */}
+        <button
+          type="button"
+          onClick={() => onSelect(user.id)}
+          className="w-full rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:shadow-md active:scale-[0.98]"
         >
-          {user.isActive ? "Active" : "Inactive"}
-        </span>
-      </p>
-
-      <button
-        type="button"
-        onClick={() => onSelect(user.id)}
-        className="mt-4 w-full rounded-lg bg-gray-800 px-4 py-2 font-medium text-white transition hover:bg-gray-700"
-      >
-        View Profile
-      </button>
+          View Profile →
+        </button>
+      </div>
     </div>
   );
 }
