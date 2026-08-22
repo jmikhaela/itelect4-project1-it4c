@@ -1,7 +1,7 @@
 import type { Session, Booking } from "../types/index";
 import { BookingStatus } from "../types/index";
 
-const API_URL = "http://localhost:3000";
+const API_URL = "http://localhost:3001";
 
 export interface CreateBookingData {
   sessionId: number;

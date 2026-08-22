@@ -15,9 +15,7 @@ function SessionDetailsPage() {
   const [time, setTime] = useState("09:00 AM");
   const [durationMinutes, setDurationMinutes] = useState(60);
 
-  const addBooking = useBookingStore(
-    (state) => state.addBooking
-  );
+  const addBooking = useBookingStore((state) => state.addBooking);
 
   const {
     data: session,
@@ -38,6 +36,10 @@ function SessionDetailsPage() {
     isActive: true,
   };
 
+  const totalPrice = session
+    ? (session.ratePerHour * durationMinutes) / 60
+    : 0;
+
   const bookingMutation = useMutation({
     mutationFn: () =>
       createBooking({
@@ -48,13 +50,7 @@ function SessionDetailsPage() {
       }),
 
     onSuccess: (booking) => {
-      addBooking(
-        booking.sessionId,
-        booking.tuteeId,
-        booking.time,
-        booking.durationMinutes
-      );
-
+      addBooking(booking);
       navigate("/bookings");
     },
   });
@@ -103,9 +99,6 @@ function SessionDetailsPage() {
     );
   }
 
-  const totalPrice =
-    (session.ratePerHour / 60) * durationMinutes;
-
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-10 dark:bg-slate-950">
       <div className="mx-auto max-w-4xl">
@@ -113,32 +106,65 @@ function SessionDetailsPage() {
         <button
           type="button"
           onClick={() => navigate("/sessions")}
-          className="mb-6 font-semibold text-blue-600 hover:text-blue-700"
+          className="mb-6 font-semibold text-blue-600 transition hover:text-blue-700 dark:text-blue-400"
         >
           ← Back to Sessions
         </button>
 
-        {/* Session Information */}
-        <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-          <div>
-            <p className="font-semibold uppercase tracking-wide text-blue-600">
-              Tutoring Session
-            </p>
+        {/* Session Details */}
+        <section className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+                Tutoring Session
+              </p>
 
-            <h1 className="mt-2 text-4xl font-extrabold text-slate-900 dark:text-white">
-              {session.subject}
-            </h1>
+              <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                {session.subject}
+              </h1>
 
-            <p className="mt-4 text-slate-500 dark:text-slate-400">
-              Book this tutoring session with {tutor.name}.
-            </p>
+              <p className="mt-3 text-slate-500 dark:text-slate-400">
+                One-on-one tutoring session with an experienced tutor.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-blue-50 px-5 py-4 text-center dark:bg-blue-950/40">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Rate
+              </p>
+
+              <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
+                ₱{session.ratePerHour.toFixed(2)}
+              </p>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                per hour
+              </p>
+            </div>
           </div>
 
-          {/* Session Details */}
-          <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 p-5 dark:bg-slate-800">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Duration
+          {/* Tutor */}
+          <div className="mt-8 rounded-xl bg-slate-50 p-5 dark:bg-slate-800">
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+              Tutor
+            </p>
+
+            <div className="mt-2">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                {tutor.name}
+              </h2>
+
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {tutor.email}
+              </p>
+            </div>
+          </div>
+
+          {/* Session Information */}
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-xl border border-slate-200 p-5 dark:border-slate-700">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Default Duration
               </p>
 
               <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
@@ -146,43 +172,14 @@ function SessionDetailsPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl bg-slate-50 p-5 dark:bg-slate-800">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Rate
+            <div className="rounded-xl border border-slate-200 p-5 dark:border-slate-700">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Session Status
               </p>
 
-              <p className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
-                ₱{session.ratePerHour} / hour
+              <p className="mt-1 text-lg font-bold text-green-600 dark:text-green-400">
+                Available
               </p>
-            </div>
-          </div>
-
-          {/* Tutor Information */}
-          <div className="mt-10">
-            <h2 className="mb-5 text-xl font-bold text-slate-900 dark:text-white">
-              Tutor Information
-            </h2>
-
-            <div className="rounded-2xl border border-slate-200 p-6 dark:border-slate-700">
-              <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                  JM
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {tutor.name}
-                  </h3>
-
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {tutor.email}
-                  </p>
-
-                  <p className="mt-1 text-sm font-medium text-green-600">
-                    ● Available
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -262,8 +259,8 @@ function SessionDetailsPage() {
 
             {bookingMutation.isError && (
               <p className="mt-3 text-sm font-medium text-red-600">
-                Failed to create booking. Please make sure JSON
-                Server is running.
+                Failed to create booking. Please make sure JSON Server is
+                running.
               </p>
             )}
           </div>

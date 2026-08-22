@@ -1,4 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import BookingBadge from "../components/BookingBadge";
 import {
@@ -6,6 +10,7 @@ import {
   fetchBookings,
   fetchSessions,
 } from "../api/client";
+import type { Booking, Session } from "../types/index";
 
 function BookingsPage() {
   const queryClient = useQueryClient();
@@ -14,7 +19,7 @@ function BookingsPage() {
     data: bookings = [],
     isLoading: bookingsLoading,
     isError: bookingsError,
-  } = useQuery({
+  } = useQuery<Booking[], Error>({
     queryKey: ["bookings"],
     queryFn: fetchBookings,
   });
@@ -22,7 +27,7 @@ function BookingsPage() {
   const {
     data: sessions = [],
     isLoading: sessionsLoading,
-  } = useQuery({
+  } = useQuery<Session[], Error>({
     queryKey: ["sessions"],
     queryFn: fetchSessions,
   });
@@ -60,14 +65,21 @@ function BookingsPage() {
 
   if (bookingsError) {
     return (
-      <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Unable to load bookings
-        </h2>
+      <div className="space-y-8">
+        <section>
+          <p className="font-semibold uppercase tracking-wide text-blue-600">
+            Your Learning
+          </p>
 
-        <p className="mt-2 text-slate-500 dark:text-slate-400">
-          Please make sure JSON Server is running.
-        </p>
+          <h1 className="mt-2 text-4xl font-extrabold text-slate-900 dark:text-white">
+            My Bookings
+          </h1>
+
+          <p className="mt-3 text-red-600">
+            Failed to load bookings. Please make sure JSON Server
+            is running.
+          </p>
+        </section>
       </div>
     );
   }

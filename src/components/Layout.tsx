@@ -4,20 +4,20 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import useAuthStore from "../store/authStore";
+import useUIStore from "../store/uiStore";
 
 function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const token = useAuthStore((state) => state.token);
+  const token = useAuthStore((state) => state.data.token);
   const logout = useAuthStore((state) => state.logout);
 
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
+  const darkMode = useUIStore((state) => state.darkMode);
+  const toggleTheme = useUIStore((state) => state.toggleTheme);
 
   useEffect(() => {
     if (darkMode) {
@@ -38,18 +38,11 @@ function Layout() {
     return location.pathname === path;
   }
 
-  function toggleTheme(): void {
-    setDarkMode((current) => !current);
-  }
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white">
-
       {/* Navbar */}
       <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
-
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-
           {/* Logo */}
           <Link
             to="/"
@@ -72,7 +65,6 @@ function Layout() {
 
           {/* Navigation */}
           <div className="hidden items-center gap-1 md:flex">
-
             <Link
               to="/"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
@@ -116,12 +108,10 @@ function Layout() {
             >
               My Bookings
             </Link>
-
           </div>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-
             {/* Theme Toggle */}
             <button
               type="button"
@@ -160,13 +150,11 @@ function Layout() {
                 Login
               </Link>
             )}
-
           </div>
         </div>
 
         {/* Mobile Navigation */}
         <div className="flex gap-2 overflow-x-auto border-t border-slate-100 px-6 py-3 dark:border-slate-800 md:hidden">
-
           <Link
             to="/"
             className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
@@ -194,7 +182,6 @@ function Layout() {
           >
             Bookings
           </Link>
-
         </div>
       </nav>
 
@@ -211,7 +198,6 @@ function Layout() {
           </p>
         </div>
       </footer>
-
     </div>
   );
 }
