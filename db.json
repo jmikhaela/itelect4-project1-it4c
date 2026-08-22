@@ -1,0 +1,60 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Janna Mikhaela",
+      "email": "janna.mikhaela@example.com",
+      "role": "tutor",
+      "isActive": true
+    },
+    {
+      "id": "2",
+      "name": "Janna Alcantara",
+      "email": "janna.alcantara@example.com",
+      "role": "tutee",
+      "isActive": true
+    }
+  ],
+  "sessions": [
+    {
+      "id": "1",
+      "tutorId": 1,
+      "subject": "Mathematics",
+      "durationMinutes": 60,
+      "ratePerHour": 300
+    },
+    {
+      "id": "2",
+      "tutorId": 1,
+      "subject": "English",
+      "durationMinutes": 60,
+      "ratePerHour": 250
+    },
+    {
+      "id": "3",
+      "tutorId": 1,
+      "subject": "Science",
+      "durationMinutes": 60,
+      "ratePerHour": 250
+    }
+  ],
+  "bookings": [
+    {
+      "sessionId": 1,
+      "tuteeId": 2,
+      "time": "10:00 AM",
+      "durationMinutes": 60,
+      "id": "Sxg76iS3d7g"
+    },
+    {
+      "sessionId": 2,
+      "tuteeId": 2,
+      "time": "02:00 PM",
+      "durationMinutes": 120,
+      "status": 1,
+      "requestedAt": "2026-08-22T13:23:04.765Z",
+      "id": "yzwSXFsE-rU"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

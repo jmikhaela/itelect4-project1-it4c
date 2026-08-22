@@ -1,4 +1,11 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import useAuthStore from "../store/authStore";
 
 function Layout() {
@@ -7,6 +14,20 @@ function Layout() {
 
   const token = useAuthStore((state) => state.token);
   const logout = useAuthStore((state) => state.logout);
+
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   function handleLogout(): void {
     logout();
@@ -17,12 +38,18 @@ function Layout() {
     return location.pathname === path;
   }
 
+  function toggleTheme(): void {
+    setDarkMode((current) => !current);
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-white">
+
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
+      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
+
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          
+
           {/* Logo */}
           <Link
             to="/"
@@ -33,10 +60,11 @@ function Layout() {
             </div>
 
             <div>
-              <h1 className="text-lg font-bold text-slate-900">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 Peer Tutoring
               </h1>
-              <p className="text-xs text-slate-500">
+
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Learn. Connect. Grow.
               </p>
             </div>
@@ -44,12 +72,13 @@ function Layout() {
 
           {/* Navigation */}
           <div className="hidden items-center gap-1 md:flex">
+
             <Link
               to="/"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                 isActive("/")
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
               }`}
             >
               Home
@@ -59,8 +88,8 @@ function Layout() {
               to="/users"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                 isActive("/users")
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
               }`}
             >
               Tutors
@@ -70,8 +99,8 @@ function Layout() {
               to="/sessions"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                 isActive("/sessions")
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
               }`}
             >
               Sessions
@@ -81,23 +110,36 @@ function Layout() {
               to="/bookings"
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                 isActive("/bookings")
-                  ? "bg-blue-50 text-blue-700"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
               }`}
             >
               My Bookings
             </Link>
+
           </div>
 
-          {/* Authentication */}
+          {/* Right side */}
           <div className="flex items-center gap-3">
+
+            {/* Theme Toggle */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            >
+              {darkMode ? "☀️ Light" : "🌙 Dark"}
+            </button>
+
+            {/* Authentication */}
             {token ? (
               <>
                 <div className="hidden text-right sm:block">
-                  <p className="text-sm font-semibold text-slate-800">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-white">
                     Janna Alcantara
                   </p>
-                  <p className="text-xs text-slate-500">
+
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Student
                   </p>
                 </div>
@@ -105,7 +147,7 @@ function Layout() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+                  className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70"
                 >
                   Logout
                 </button>
@@ -118,38 +160,41 @@ function Layout() {
                 Login
               </Link>
             )}
+
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex gap-2 overflow-x-auto border-t border-slate-100 px-6 py-3 md:hidden">
+        <div className="flex gap-2 overflow-x-auto border-t border-slate-100 px-6 py-3 dark:border-slate-800 md:hidden">
+
           <Link
             to="/"
-            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium"
+            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
           >
             Home
           </Link>
 
           <Link
             to="/users"
-            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium"
+            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
           >
             Tutors
           </Link>
 
           <Link
             to="/sessions"
-            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium"
+            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
           >
             Sessions
           </Link>
 
           <Link
             to="/bookings"
-            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium"
+            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
           >
             Bookings
           </Link>
+
         </div>
       </nav>
 
@@ -159,13 +204,14 @@ function Layout() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white">
+      <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="mx-auto max-w-7xl px-6 py-6 text-center">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             © 2026 Peer Tutoring Platform
           </p>
         </div>
       </footer>
+
     </div>
   );
 }

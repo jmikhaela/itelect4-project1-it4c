@@ -1,20 +1,30 @@
 import { create } from "zustand";
 
-import type { Booking } from "../types/index";
+import type { Booking, ID } from "../types/index";
 import { BookingStatus } from "../types/index";
 
 interface BookingStore {
   bookings: Booking[];
 
-  addBooking: (sessionId: number, tuteeId: number) => void;
+  addBooking: (
+    sessionId: number,
+    tuteeId: number,
+    time: string,
+    durationMinutes: number
+  ) => void;
 
-  removeBooking: (bookingId: number) => void;
+  removeBooking: (bookingId: ID) => void;
 }
 
 const useBookingStore = create<BookingStore>((set) => ({
   bookings: [],
 
-  addBooking: (sessionId: number, tuteeId: number) => {
+  addBooking: (
+    sessionId: number,
+    tuteeId: number,
+    time: string,
+    durationMinutes: number
+  ) => {
     set((state) => {
       const newBooking: Booking = {
         id: Date.now(),
@@ -22,6 +32,8 @@ const useBookingStore = create<BookingStore>((set) => ({
         tuteeId,
         status: BookingStatus.Confirmed,
         requestedAt: new Date(),
+        time,
+        durationMinutes,
       };
 
       return {
@@ -30,7 +42,7 @@ const useBookingStore = create<BookingStore>((set) => ({
     });
   },
 
-  removeBooking: (bookingId: number) => {
+  removeBooking: (bookingId: ID) => {
     set((state) => ({
       bookings: state.bookings.filter(
         (booking) => booking.id !== bookingId
