@@ -1,19 +1,25 @@
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import { createBooking, fetchSessionById } from "../api/client";
 import useBookingStore from "../store/bookingStore";
 import type { Session, User } from "../types/index";
+import {
+  bookingSchema,
+  type BookingFormData,
+} from "../schemas/bookingSchema";
 
 function SessionDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   const sessionId = Number(id);
-
-  const [time, setTime] = useState("09:00 AM");
-  const [durationMinutes, setDurationMinutes] = useState(60);
 
   const addBooking = useBookingStore((state) => state.addBooking);
 
@@ -36,17 +42,32 @@ function SessionDetailsPage() {
     isActive: true,
   };
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<BookingFormData>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      time: "09:00 AM",
+      durationMinutes: 60,
+    },
+  });
+
+  const durationMinutes = watch("durationMinutes");
+
   const totalPrice = session
-    ? (session.ratePerHour * durationMinutes) / 60
+    ? (session.ratePerHour * (durationMinutes || 0)) / 60
     : 0;
 
   const bookingMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (data: BookingFormData) =>
       createBooking({
         sessionId,
         tuteeId: 2,
-        time,
-        durationMinutes,
+        time: data.time,
+        durationMinutes: data.durationMinutes,
       }),
 
     onSuccess: (booking) => {
@@ -54,6 +75,10 @@ function SessionDetailsPage() {
       navigate("/bookings");
     },
   });
+
+  const onSubmit = (data: BookingFormData) => {
+    bookingMutation.mutate(data);
+  };
 
   if (isLoading) {
     return (
@@ -86,13 +111,13 @@ function SessionDetailsPage() {
                 : "The tutoring session you are looking for does not exist."}
             </p>
 
-            <button
+            <Button
               type="button"
               onClick={() => navigate("/sessions")}
               className="mt-6 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
             >
               ← Back to Sessions
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -102,17 +127,20 @@ function SessionDetailsPage() {
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-10 dark:bg-slate-950">
       <div className="mx-auto max-w-4xl">
+
         {/* Back Button */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => navigate("/sessions")}
-          className="mb-6 font-semibold text-blue-600 transition hover:text-blue-700 dark:text-blue-400"
+          className="mb-6 font-semibold text-blue-600 transition hover:bg-transparent hover:text-blue-700 dark:text-blue-400"
         >
           ← Back to Sessions
-        </button>
+        </Button>
 
         {/* Session Details */}
         <section className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
@@ -185,6 +213,7 @@ function SessionDetailsPage() {
 
           {/* Booking Section */}
           <div className="mt-10 rounded-2xl bg-blue-50 p-6 dark:bg-blue-950/30">
+
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Book This Session
             </h2>
@@ -193,76 +222,95 @@ function SessionDetailsPage() {
               Select your preferred time and duration.
             </p>
 
-            {/* Time */}
-            <div className="mt-6">
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                Preferred Time
-              </label>
-
-              <select
-                value={time}
-                onChange={(event) => setTime(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-              >
-                <option>09:00 AM</option>
-                <option>10:00 AM</option>
-                <option>11:00 AM</option>
-                <option>01:00 PM</option>
-                <option>02:00 PM</option>
-                <option>03:00 PM</option>
-                <option>04:00 PM</option>
-              </select>
-            </div>
-
-            {/* Duration */}
-            <div className="mt-5">
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
-                Duration
-              </label>
-
-              <select
-                value={durationMinutes}
-                onChange={(event) =>
-                  setDurationMinutes(Number(event.target.value))
-                }
-                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-              >
-                <option value={30}>30 minutes</option>
-                <option value={60}>60 minutes</option>
-                <option value={90}>90 minutes</option>
-                <option value={120}>120 minutes</option>
-              </select>
-            </div>
-
-            {/* Total */}
-            <div className="mt-5 rounded-xl bg-white p-4 dark:bg-slate-900">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Estimated Total
-              </p>
-
-              <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
-                ₱{totalPrice.toFixed(2)}
-              </p>
-            </div>
-
-            {/* Confirm */}
-            <button
-              type="button"
-              onClick={() => bookingMutation.mutate()}
-              disabled={bookingMutation.isPending}
-              className="mt-6 w-full rounded-xl bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            {/* Booking Form */}
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
             >
-              {bookingMutation.isPending
-                ? "Booking..."
-                : "Confirm Booking →"}
-            </button>
 
-            {bookingMutation.isError && (
-              <p className="mt-3 text-sm font-medium text-red-600">
-                Failed to create booking. Please make sure JSON Server is
-                running.
-              </p>
-            )}
+              {/* Time */}
+              <div className="mt-6">
+                <Label
+                  htmlFor="time"
+                  className="text-sm font-semibold text-slate-700 dark:text-slate-200"
+                >
+                  Preferred Time
+                </Label>
+
+                <Input
+                  id="time"
+                  type="text"
+                  placeholder="Example: 09:00 AM"
+                  {...register("time")}
+                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                />
+
+                {errors.time && (
+                  <p className="mt-2 text-sm font-medium text-red-600">
+                    {errors.time.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Duration */}
+              <div className="mt-5">
+                <Label
+                  htmlFor="durationMinutes"
+                  className="text-sm font-semibold text-slate-700 dark:text-slate-200"
+                >
+                  Duration
+                </Label>
+
+                <Input
+                  id="durationMinutes"
+                  type="number"
+                  min="30"
+                  max="120"
+                  step="30"
+                  {...register("durationMinutes", {
+                    valueAsNumber: true,
+                  })}
+                  className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                />
+
+                {errors.durationMinutes && (
+                  <p className="mt-2 text-sm font-medium text-red-600">
+                    {errors.durationMinutes.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Total */}
+              <div className="mt-5 rounded-xl bg-white p-4 dark:bg-slate-900">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Estimated Total
+                </p>
+
+                <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+                  ₱{totalPrice.toFixed(2)}
+                </p>
+              </div>
+
+              {/* Confirm */}
+              <Button
+                type="submit"
+                disabled={bookingMutation.isPending}
+                className="mt-6 w-full rounded-xl bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {bookingMutation.isPending
+                  ? "Booking..."
+                  : "Confirm Booking →"}
+              </Button>
+
+              {/* Mutation Error */}
+              {bookingMutation.isError && (
+                <p className="mt-3 text-sm font-medium text-red-600">
+                  Failed to create booking. Please make sure JSON Server is
+                  running.
+                </p>
+              )}
+
+            </form>
           </div>
         </section>
       </div>

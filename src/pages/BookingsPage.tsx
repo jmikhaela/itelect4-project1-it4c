@@ -117,8 +117,12 @@ function BookingsPage() {
       {bookings.length > 0 ? (
         <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {bookings.map((booking) => {
+            // Match the booking with its session.
+            // Number() makes the comparison work whether
+            // the IDs are stored as strings or numbers.
             const session = sessions.find(
-              (item) => item.id === booking.sessionId
+              (item) =>
+                Number(item.id) === Number(booking.sessionId)
             );
 
             return (
@@ -156,6 +160,7 @@ function BookingsPage() {
 
                 {/* Session Details */}
                 <div className="mt-6 grid grid-cols-2 gap-4">
+                  {/* Time */}
                   <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
                     <p className="text-xs uppercase tracking-wide text-slate-400">
                       Time
@@ -166,6 +171,7 @@ function BookingsPage() {
                     </p>
                   </div>
 
+                  {/* Duration */}
                   <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
                     <p className="text-xs uppercase tracking-wide text-slate-400">
                       Duration
@@ -176,6 +182,7 @@ function BookingsPage() {
                     </p>
                   </div>
 
+                  {/* Rate */}
                   <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
                     <p className="text-xs uppercase tracking-wide text-slate-400">
                       Rate
@@ -186,6 +193,7 @@ function BookingsPage() {
                     </p>
                   </div>
 
+                  {/* Subject */}
                   <div className="rounded-xl bg-slate-50 p-4 dark:bg-slate-800">
                     <p className="text-xs uppercase tracking-wide text-slate-400">
                       Subject
@@ -245,7 +253,7 @@ function BookingsPage() {
           })}
         </section>
       ) : (
-        <section className="rounded-2xl bg-white p-12 text-center shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+        <section className="rounded-2xl bg-white p-12 text-center shadow-sm ring-1 ring-slate-200 dark:bg-slate-900">
           <div className="text-5xl">📋</div>
 
           <h2 className="mt-5 text-2xl font-bold text-slate-800 dark:text-white">
