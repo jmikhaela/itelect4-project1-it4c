@@ -30,12 +30,18 @@ export interface Session {
 }
 
 export interface Booking {
-  id: number;
+  id: ID;
   sessionId: number;
   tuteeId: number;
   status: BookingStatus;
-  requestedAt: Date;
+  requestedAt: Date | string;
+  time: string;
+  durationMinutes: number;
 }
+
+
+
+
 
 // Intersection type
 export type TutorWithSessions = User & {

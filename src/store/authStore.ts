@@ -1,21 +1,47 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface AuthData {
+  token: string | null;
+}
 
 interface AuthState {
-  token: string | null;
+  data: AuthData;
   login: (token: string) => void;
   logout: () => void;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
-  token: null,
+const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      data: {
+        token: null,
+      },
 
-  login: (token: string) => {
-    set({ token });
-  },
+      login: (token: string) => {
+        set({
+          data: {
+            token,
+          },
+        });
+      },
 
-  logout: () => {
-    set({ token: null });
-  },
-}));
+      logout: () => {
+        set({
+          data: {
+            token: null,
+          },
+        });
+      },
+    }),
+    {
+      name: "peer-tutoring-auth",
+
+      partialize: (state) => ({
+        data: state.data,
+      }),
+    }
+  )
+);
 
 export default useAuthStore;

@@ -1,27 +1,66 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+
 import SessionCard from "../components/SessionCard";
+import { fetchSessions } from "../api/client";
+
 import type { Session } from "../types/index";
 
 function SessionsPage() {
   const navigate = useNavigate();
 
-  const sessions: Session[] = [
-    {
-      id: 1,
-      tutorId: 1,
-      subject: "Calculus 1",
-      durationMinutes: 60,
-      ratePerHour: 300,
-    },
-  ];
+  const {
+    data: sessions = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Session[], Error>({
+    queryKey: ["sessions"],
+    queryFn: fetchSessions,
+  });
 
   function handleBook(sessionId: number): void {
     navigate(`/sessions/${sessionId}`);
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-6 py-10 dark:bg-slate-950">
+        <div className="mx-auto max-w-6xl">
+          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+            <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">
+              Loading tutoring sessions...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-6 py-10 dark:bg-slate-950">
+        <div className="mx-auto max-w-6xl">
+          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-red-200 dark:bg-slate-900">
+            <h1 className="text-2xl font-bold text-red-600">
+              Unable to load sessions
+            </h1>
+
+            <p className="mt-2 text-slate-500 dark:text-slate-400">
+              {error.message}
+            </p>
+
+            <p className="mt-4 text-sm text-slate-400">
+              Make sure JSON Server is running on port 3000.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-10 dark:bg-slate-950">
-
       <div className="mx-auto max-w-6xl">
 
         {/* Page Header */}
@@ -40,7 +79,7 @@ function SessionsPage() {
           </p>
         </div>
 
-        {/* Search / Filter Header */}
+        {/* Available Sessions */}
         <div className="mb-8 flex flex-col justify-between gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:flex-row sm:items-center dark:bg-slate-900 dark:ring-slate-800">
 
           <div>
@@ -49,7 +88,7 @@ function SessionsPage() {
             </h2>
 
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              {sessions.length} session available
+              {sessions.length} sessions available
             </p>
           </div>
 
@@ -60,38 +99,19 @@ function SessionsPage() {
         </div>
 
         {/* Sessions */}
-        {sessions.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-            {sessions.map((session: Session) => (
-              <SessionCard
-                key={session.id}
-                session={session}
-                onBook={handleBook}
-              />
-            ))}
+          {sessions.map((session: Session) => (
+            <SessionCard
+              key={session.id}
+              session={session}
+              onBook={handleBook}
+            />
+          ))}
 
-          </div>
-        ) : (
-          <div className="rounded-2xl bg-white p-12 text-center shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
-
-            <div className="text-5xl">
-              📚
-            </div>
-
-            <h2 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">
-              No Sessions Available
-            </h2>
-
-            <p className="mt-2 text-slate-500 dark:text-slate-400">
-              There are currently no tutoring sessions available.
-            </p>
-
-          </div>
-        )}
+        </div>
 
       </div>
-
     </div>
   );
 }
