@@ -109,6 +109,17 @@ function Layout() {
             >
               My Bookings
             </Link>
+
+            <Link
+              to="/review"
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                isActive("/review")
+                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+              }`}
+            >
+              AI Review
+            </Link>
           </div>
 
           {/* Right side */}
@@ -186,6 +197,13 @@ function Layout() {
             className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
           >
             Bookings
+          </Link>
+
+          <Link
+            to="/review"
+            className="whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium dark:bg-slate-800 dark:text-slate-200"
+          >
+            AI Review
           </Link>
         </div>
       </nav>

@@ -11,6 +11,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import SessionsPage from "./pages/SessionsPage";
 import SessionDetailsPage from "./pages/SessionDetailsPage";
 import BookingsPage from "./pages/BookingsPage";
+import ReviewPage from "./pages/ReviewPage";
 
 function App() {
   return (
@@ -71,6 +72,12 @@ function App() {
           <Route
             path="/bookings"
             element={<BookingsPage />}
+          />
+
+          {/* Session 11: AI Review */}
+          <Route
+            path="review"
+            element={<ReviewPage />}
           />
         </Route>
       </Route>
