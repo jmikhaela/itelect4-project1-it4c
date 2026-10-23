@@ -6,39 +6,47 @@ interface AuthData {
 }
 
 interface AuthState {
+  token: string | null;
+  userName: string | null;
   data: AuthData;
-  login: (token: string) => void;
+  setSession: (token: string, userName: string) => void;
+  login: (token: string, userName?: string) => void;
   logout: () => void;
 }
 
 const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
+      token: null,
+      userName: null,
       data: {
         token: null,
       },
-
-      login: (token: string) => {
+      setSession: (token: string, userName: string) =>
         set({
-          data: {
-            token,
-          },
-        });
-      },
-
-      logout: () => {
+          token,
+          userName,
+          data: { token },
+        }),
+      login: (token: string, userName?: string) =>
         set({
-          data: {
-            token: null,
-          },
-        });
-      },
+          token,
+          userName: userName ?? null,
+          data: { token },
+        }),
+      logout: () =>
+        set({
+          token: null,
+          userName: null,
+          data: { token: null },
+        }),
     }),
     {
-      name: "peer-tutoring-auth",
-
+      name: "itelect4-auth",
       partialize: (state) => ({
-        data: state.data,
+        token: state.token,
+        userName: state.userName,
+        data: { token: state.token },
       }),
     }
   )

@@ -13,7 +13,8 @@ function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const token = useAuthStore((state) => state.data.token);
+  const token = useAuthStore((state) => state.token ?? state.data?.token);
+  const userName = useAuthStore((state) => state.userName);
   const logout = useAuthStore((state) => state.logout);
 
   const darkMode = useUIStore((state) => state.darkMode);
@@ -125,9 +126,7 @@ function Layout() {
             {token ? (
               <>
                 <div className="hidden text-right sm:block">
-                  <p className="text-sm font-semibold text-slate-800 dark:text-white">
-                    Janna Alcantara
-                  </p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-white">{userName ?? "Student"}</p>
 
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Student
@@ -138,17 +137,23 @@ function Layout() {
                   type="button"
                   onClick={handleLogout}
                   className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/70"
-                >
-                  Logout
-                </button>
+                >{userName ? `Logout (${userName})` : "Logout"}</button>
               </>
             ) : (
-              <Link
-                to="/login"
-                className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
-              >
-                Login
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="rounded-lg border border-slate-200 px-3.5 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                >
+                  Register
+                </Link>
+              </div>
             )}
           </div>
         </div>

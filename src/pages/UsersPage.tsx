@@ -14,7 +14,7 @@ function UsersPage() {
     },
   ];
 
-  function handleSelectTutor(id: number): void {
+  function handleSelectTutor(id: number | string): void {
     navigate(`/users/${id}`);
   }
 

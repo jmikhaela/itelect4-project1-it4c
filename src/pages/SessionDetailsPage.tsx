@@ -63,12 +63,7 @@ function SessionDetailsPage() {
 
   const bookingMutation = useMutation({
     mutationFn: (data: BookingFormData) =>
-      createBooking({
-        sessionId,
-        tuteeId: 2,
-        time: data.time,
-        durationMinutes: data.durationMinutes,
-      }),
+      createBooking({ sessionId, time: data.time, durationMinutes: data.durationMinutes }),
 
     onSuccess: (booking) => {
       addBooking(booking);

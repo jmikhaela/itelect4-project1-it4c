@@ -2,7 +2,7 @@ import type { Session } from "../types/index";
 
 interface SessionCardProps {
   session: Session;
-  onBook: (sessionId: number) => void;
+  onBook: (sessionId: number | string) => void;
 }
 
 function SessionCard({

@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import UsersPage from "./pages/UsersPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import SessionsPage from "./pages/SessionsPage";
@@ -14,7 +15,6 @@ import BookingsPage from "./pages/BookingsPage";
 function App() {
   return (
     <Routes>
-
       {/* =========================
           PUBLIC ROUTES
       ========================= */}
@@ -25,6 +25,11 @@ function App() {
         element={<LoginPage />}
       />
 
+      {/* Register */}
+      <Route
+        path="/register"
+        element={<RegisterPage />}
+      />
 
       {/* =========================
           PROTECTED ROUTES
@@ -32,7 +37,6 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
-
           {/* Home */}
           <Route
             path="/"
@@ -68,10 +72,8 @@ function App() {
             path="/bookings"
             element={<BookingsPage />}
           />
-
         </Route>
       </Route>
-
 
       {/* =========================
           UNKNOWN URL
@@ -81,7 +83,6 @@ function App() {
         path="*"
         element={<Navigate to="/" replace />}
       />
-
     </Routes>
   );
 }
