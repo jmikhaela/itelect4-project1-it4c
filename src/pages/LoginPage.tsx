@@ -1,73 +1,97 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useAuthStore from "../store/authStore";
+import { loginUser } from "../api/client";
+import { loginSchema } from "../schemas/authSchema";
+import type { LoginFormValues } from "../schemas/authSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import useAuthStore from "../store/authStore";
-
 function LoginPage() {
   const navigate = useNavigate();
+  const setSession = useAuthStore((state) => state.setSession);
 
-  const login = useAuthStore(
-    (state) => state.login
-  );
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const [username, setUsername] =
-    useState<string>("");
+  const logIn = useMutation({
+    mutationFn: (values: LoginFormValues) => loginUser(values),
+    onSuccess: (reply) => {
+      setSession(reply.token, reply.user.name);
+      navigate("/");
+    },
+  });
 
-  function handleLogin(): void {
-    if (!username.trim()) {
-      return;
-    }
-
-    // Mock token para sa activity
-    login("mock-token-123");
-
-    navigate("/");
-  }
+  const onSubmit = (values: LoginFormValues): void => {
+    logIn.mutate(values);
+  };
 
   return (
-    <div className="mx-auto max-w-md">
-      <div className="rounded-xl bg-white p-8 shadow-md dark:bg-slate-900">
-
-        <h1 className="text-3xl font-bold text-blue-700 dark:text-blue-400">
+    <div className="mx-auto max-w-md px-4 py-8">
+      <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
           Login
         </h1>
-
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
-          Login to your Peer Tutoring account.
+        <p className="mt-2 text-slate-600 dark:text-slate-300">
+          Sign in to your Peer Tutoring account.
         </p>
 
-        <div className="mt-6">
-          <Label
-            htmlFor="username"
-            className="font-medium text-gray-700 dark:text-gray-200"
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="juan@dlsl.edu.ph"
+              {...register("email")}
+              className="mt-1"
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              {...register("password")}
+              className="mt-1"
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            disabled={logIn.isPending}
+            className="w-full bg-blue-600 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
           >
-            Username
-          </Label>
+            {logIn.isPending ? "Signing in..." : "Log In"}
+          </Button>
+        </form>
 
-          <Input
-            id="username"
-            type="text"
-            value={username}
-            onChange={(event) =>
-              setUsername(event.target.value)
-            }
-            placeholder="Enter your username"
-            className="mt-2 w-full"
-          />
-        </div>
+        {logIn.isError && (
+          <p className="mt-4 text-sm text-red-600">{logIn.error.message}</p>
+        )}
 
-        <Button
-          type="button"
-          onClick={handleLogin}
-          className="mt-5 w-full bg-blue-600 font-medium text-white hover:bg-blue-700"
-        >
-          Login
-        </Button>
-
+        <p className="mt-6 text-sm text-slate-600 dark:text-slate-400">
+          No account yet?{" "}
+          <Link to="/register" className="font-semibold text-blue-600 hover:underline">
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ function SessionsPage() {
     queryFn: fetchSessions,
   });
 
-  function handleBook(sessionId: number): void {
+  function handleBook(sessionId: number | string): void {
     navigate(`/sessions/${sessionId}`);
   }
 

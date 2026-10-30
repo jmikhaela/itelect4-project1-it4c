@@ -2,7 +2,7 @@ import type { User } from "../types/index";
 
 interface UserCardProps {
   user: User;
-  onSelect: (id: number) => void;
+  onSelect: (id: number | string) => void;
 }
 
 function UserCard({ user, onSelect }: UserCardProps) {
