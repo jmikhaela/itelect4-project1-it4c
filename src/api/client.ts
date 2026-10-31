@@ -28,7 +28,9 @@ async function request<T>(
 ): Promise<T> {
   const token = useAuthStore.getState().token;
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const baseUrl = API_URL.replace(/\/+$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const res = await fetch(`${baseUrl}${cleanPath}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
@@ -144,3 +146,4 @@ export function askAi(prompt: string): Promise<AiReview> {
     body: JSON.stringify({ prompt }),
   });
 }
+
