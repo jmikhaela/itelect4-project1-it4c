@@ -19,7 +19,9 @@ function SessionDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const sessionId = Number(id);
+  // MongoDB ids are strings like "6ad39968f97a3235f74eb894", not numbers,
+  // so the id from the URL is used as-is. Number() would turn it into NaN.
+  const sessionId = id ?? "";
 
   const addBooking = useBookingStore((state) => state.addBooking);
 
@@ -31,7 +33,7 @@ function SessionDetailsPage() {
   } = useQuery<Session, Error>({
     queryKey: ["sessions", sessionId],
     queryFn: () => fetchSessionById(sessionId),
-    enabled: Number.isFinite(sessionId),
+    enabled: sessionId !== "",
   });
 
   const tutor: User = {

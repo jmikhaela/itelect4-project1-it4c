@@ -118,11 +118,11 @@ function BookingsPage() {
         <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {bookings.map((booking) => {
             // Match the booking with its session.
-            // Number() makes the comparison work whether
-            // the IDs are stored as strings or numbers.
+            // String() makes the comparison work whether
+            // the IDs are numbers or MongoDB id strings.
             const session = sessions.find(
               (item) =>
-                Number(item.id) === Number(booking.sessionId)
+                String(item.id) === String(booking.sessionId)
             );
 
             return (
